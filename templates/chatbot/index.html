@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusAI — Intelligent Chatbot</title>
+    <meta name="description" content="NexusAI - A powerful GenAI and RAG-based chatbot with document intelligence.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="app-container" id="app">
+        <!-- ─── Sidebar ─── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <span class="material-icons-round">auto_awesome</span>
+                    </div>
+                    <h1 class="logo-text">NexusAI</h1>
+                </div>
+                <button class="btn-icon sidebar-toggle-btn" id="sidebarCloseBtn" title="Close sidebar">
+                    <span class="material-icons-round">chevron_left</span>
+                </button>
+            </div>
+
+            <button class="btn-new-chat" id="newChatBtn">
+                <span class="material-icons-round">add</span>
+                <span>New Chat</span>
+            </button>
+
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <span class="material-icons-round">history</span>
+                    <span>Chat History</span>
+                    <button class="btn-icon btn-clear-all" id="clearAllBtn" title="Clear all chats">
+                        <span class="material-icons-round">delete_sweep</span>
+                    </button>
+                </div>
+                <div class="session-list" id="sessionList">
+                    <div class="empty-state" id="emptyHistory">
+                        <span class="material-icons-round">chat_bubble_outline</span>
+                        <p>No conversations yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RAG Documents Section -->
+            <div class="sidebar-section rag-section" id="ragSection">
+                <div class="section-header">
+                    <span class="material-icons-round">folder_open</span>
+                    <span>Knowledge Base</span>
+                </div>
+                <div class="document-list" id="documentList">
+                    <div class="empty-state" id="emptyDocs">
+                        <span class="material-icons-round">description</span>
+                        <p>No documents uploaded</p>
+                    </div>
+                </div>
+                <label class="btn-upload" id="uploadBtn">
+                    <span class="material-icons-round">cloud_upload</span>
+                    <span>Upload Document</span>
+                    <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv" hidden>
+                </label>
+            </div>
+        </aside>
+
+        <!-- ─── Main Chat Area ─── -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="btn-icon" id="sidebarOpenBtn" title="Open sidebar">
+                        <span class="material-icons-round">menu</span>
+                    </button>
+                    <div class="session-title" id="sessionTitle">New Chat</div>
+                </div>
+
+                <!-- Mode Toggle -->
+                <div class="mode-toggle" id="modeToggle">
+                    <button class="mode-btn active" data-mode="genai" id="genaiModeBtn">
+                        <span class="material-icons-round">psychology</span>
+                        <span>GenAI</span>
+                    </button>
+                    <button class="mode-btn" data-mode="rag" id="ragModeBtn">
+                        <span class="material-icons-round">library_books</span>
+                        <span>RAG</span>
+                    </button>
+                    <div class="mode-slider" id="modeSlider"></div>
+                </div>
+
+                <div class="mode-indicator" id="modeIndicator">
+                    <div class="indicator-dot"></div>
+                    <span id="modeLabel">GenAI Mode</span>
+                </div>
+            </header>
+
+            <!-- Chat Messages Area -->
+            <div class="chat-area" id="chatArea">
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-glow"></div>
+                    <div class="welcome-icon">
+                        <span class="material-icons-round">auto_awesome</span>
+                    </div>
+                    <h2>Welcome to NexusAI</h2>
+                    <p>Your intelligent assistant powered by advanced AI</p>
+                    <div class="feature-cards">
+                        <div class="feature-card" data-mode="genai">
+                            <span class="material-icons-round">psychology</span>
+                            <h3>GenAI Mode</h3>
+                            <p>General-purpose AI for any question, creative writing, coding help, and more.</p>
+                        </div>
+                        <div class="feature-card" data-mode="rag">
+                            <span class="material-icons-round">library_books</span>
+                            <h3>RAG Mode</h3>
+                            <p>Upload documents and ask questions — answers grounded in your own knowledge base.</p>
+                        </div>
+                    </div>
+                    <div class="quick-prompts">
+                        <button class="quick-prompt" data-prompt="Explain quantum computing in simple terms">
+                            <span class="material-icons-round">lightbulb</span> Explain quantum computing
+                        </button>
+                        <button class="quick-prompt" data-prompt="Write a Python function to sort a list">
+                            <span class="material-icons-round">code</span> Write a Python sort function
+                        </button>
+                        <button class="quick-prompt" data-prompt="What are the benefits of meditation?">
+                            <span class="material-icons-round">spa</span> Benefits of meditation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messagesContainer"></div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-wrapper" id="inputWrapper">
+                    <textarea
+                        id="messageInput"
+                        placeholder="Type your message..."
+                        rows="1"
+                        autofocus
+                    ></textarea>
+                    <button class="btn-send" id="sendBtn" disabled title="Send message">
+                        <span class="material-icons-round">arrow_upward</span>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    <span>NexusAI powered by Hugging Face • Responses may be inaccurate</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Upload Progress Modal -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-content">
+            <div class="upload-progress">
+                <div class="spinner"></div>
+                <p id="uploadStatus">Processing document...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
